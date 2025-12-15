@@ -60,18 +60,22 @@ class HomeView extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
+              // decoration: BoxDecoration(
+              //   color: Colors.white.withOpacity(0.2),
+              //   borderRadius: BorderRadius.circular(8),
+              // ),
+              child: Image.asset(
+                'assets/images/smartgrape.id.png',
+                width: 32,
+                height: 32,
               ),
-              child: const Icon(Icons.dashboard_rounded, size: 24, color: Colors.grey),
             ),
             const SizedBox(width: 12),
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Dashboard IoT',
+                  'SmartGrape.id',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -79,7 +83,7 @@ class HomeView extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Monitoring Real-time',
+                  'Real-Time Monitoring',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.normal,
@@ -220,7 +224,7 @@ class HomeView extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            suhu != null ? '${suhu.humidity.toStringAsFixed(1)}%' : 'N/A',
+                            suhu != null ? '${suhu.humidity.toStringAsFixed(1)}H' : 'N/A',
                             style: TextStyle(
                               fontSize: 56,
                               fontWeight: FontWeight.bold,
@@ -584,7 +588,7 @@ class HomeView extends StatelessWidget {
             // Footer Info
             Center(
               child: Text(
-                '© 2025 Capstone Anggur. All rights reserved.',
+                '© 2025 SmartGrape.id - All rights reserved.',
                 style: TextStyle(
                   fontSize: 12,
                   color: grapeAccent.withOpacity(0.7),

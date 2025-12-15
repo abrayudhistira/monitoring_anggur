@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 
 // Ganti dengan URL backend Node.js Anda
-const String baseURL = "http://10.0.2.2:3000"; 
+const String baseURL = "http://192.168.1.123:5002"; 
 
 class ApiService {
   // Metode untuk mendapatkan header HTTP dengan token JWT

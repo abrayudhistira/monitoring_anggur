@@ -98,18 +98,18 @@ class _LoginViewState extends State<LoginView> {
                   children: [
                     // Logo atau Icon
                     Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.account_circle,
-                        size: 80,
-                        color: Colors.white,
+                      // padding: const EdgeInsets.all(24),
+                      // decoration: BoxDecoration(
+                      //   color: Colors.white.withOpacity(0.15),
+                      //   shape: BoxShape.circle,
+                      // ),
+                      child: Image.asset(
+                        'assets/images/smartgrape.id.png',
+                        width: 120,
+                        height: 120,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 5),
 
                     // Judul
                     const Text(
@@ -129,7 +129,7 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 20),
 
                     // Card Form
                     Container(
@@ -225,7 +225,7 @@ class _LoginViewState extends State<LoginView> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 60),
 
                           // Login Button
                           SizedBox(
@@ -274,7 +274,7 @@ class _LoginViewState extends State<LoginView> {
 
                     // Footer
                     Text(
-                      '© 2025 Capstone Anggur. All rights reserved.',
+                      '© 2025 SmartGrape.id - All rights reserved.',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
                         fontSize: 14,
