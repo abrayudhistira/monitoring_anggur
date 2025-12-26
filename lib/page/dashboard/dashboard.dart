@@ -19,14 +19,16 @@ class HomeView extends StatelessWidget {
     // Watch SettingController untuk data real-time suhu, valve, dan mode
     final settingController = context.watch<SettingController>();
     final suhu = settingController.latestSuhu;
-    
+
     // Setting Valve
     final valveSetting = settingController.valveSetting;
     final valveStatus = valveSetting?.status ?? 'UNKNOWN';
-    final valveStatusColor = valveStatus == 'ON' 
-        ? Colors.green.shade600 
+    final valveStatusColor = valveStatus == 'ON'
+        ? Colors.green.shade600
         : (valveStatus == 'OFF' ? Colors.red.shade600 : Colors.grey);
-    final toggleValveLabel = valveStatus == 'ON' ? 'Matikan Valve' : 'Nyalakan Valve';
+    final toggleValveLabel = valveStatus == 'ON'
+        ? 'Matikan Valve'
+        : 'Nyalakan Valve';
     final newValveStatus = valveStatus == 'ON' ? 'OFF' : 'ON';
 
     // Setting Mode
@@ -36,7 +38,7 @@ class HomeView extends StatelessWidget {
     final modeColor = isAuto ? Colors.orange.shade600 : Colors.blue.shade600;
     final modeToggleLabel = isAuto ? 'Ubah ke MANUAL' : 'Ubah ke AUTO';
     final newModeStatus = isAuto ? 'Manual' : 'Auto';
-    
+
     // Read AuthController untuk fungsi logout
     final authController = context.read<AuthController>();
 
@@ -119,7 +121,10 @@ class HomeView extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [grapePrimary.withOpacity(0.8), grapeAccent.withOpacity(0.8)],
+                  colors: [
+                    grapePrimary.withOpacity(0.8),
+                    grapeAccent.withOpacity(0.8),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -134,11 +139,7 @@ class HomeView extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(
-                    Icons.spa,
-                    size: 48,
-                    color: Colors.white,
-                  ),
+                  const Icon(Icons.spa, size: 48, color: Colors.white),
                   const SizedBox(height: 8),
                   const Text(
                     'Monitoring Anggur',
@@ -150,7 +151,10 @@ class HomeView extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    DateFormat('EEEE, dd MMMM yyyy').format(DateTime.now()),
+                    DateFormat(
+                      'EEEE, dd MMMM yyyy',
+                      'id_ID',
+                    ).format(DateTime.now()), // <--- Ubah di sini
                     style: TextStyle(
                       fontSize: 11,
                       color: Colors.white.withOpacity(0.9),
@@ -159,7 +163,7 @@ class HomeView extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
 
             // --- Real-time Kelembaban Card ---
@@ -224,7 +228,9 @@ class HomeView extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            suhu != null ? '${suhu.humidity.toStringAsFixed(1)}H' : 'N/A',
+                            suhu != null
+                                ? '${suhu.humidity.toStringAsFixed(1)}H'
+                                : 'N/A',
                             style: TextStyle(
                               fontSize: 56,
                               fontWeight: FontWeight.bold,
@@ -233,27 +239,38 @@ class HomeView extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
-                              color: suhu != null ? Colors.green.shade50 : Colors.grey.shade200,
+                              color: suhu != null
+                                  ? Colors.green.shade50
+                                  : Colors.grey.shade200,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  suhu != null ? Icons.check_circle : Icons.pending,
+                                  suhu != null
+                                      ? Icons.check_circle
+                                      : Icons.pending,
                                   size: 16,
-                                  color: suhu != null ? Colors.green.shade700 : Colors.grey,
+                                  color: suhu != null
+                                      ? Colors.green.shade700
+                                      : Colors.grey,
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  suhu != null 
+                                  suhu != null
                                       ? 'Update: ${DateFormat('HH:mm:ss').format(suhu.timestamp)}'
                                       : 'Menunggu data sensor...',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: suhu != null ? Colors.green.shade700 : Colors.grey,
+                                    color: suhu != null
+                                        ? Colors.green.shade700
+                                        : Colors.grey,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -323,7 +340,9 @@ class HomeView extends StatelessWidget {
                       child: Column(
                         children: [
                           Icon(
-                            isAuto ? Icons.smart_toy_rounded : Icons.pan_tool_alt_rounded,
+                            isAuto
+                                ? Icons.smart_toy_rounded
+                                : Icons.pan_tool_alt_rounded,
                             size: 48,
                             color: modeColor,
                           ),
@@ -338,7 +357,7 @@ class HomeView extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            isAuto 
+                            isAuto
                                 ? 'Sistem mengontrol valve secara otomatis'
                                 : 'Anda mengontrol valve secara manual',
                             style: TextStyle(
@@ -357,7 +376,8 @@ class HomeView extends StatelessWidget {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () => settingController.updateModeStatus(newModeStatus),
+                        onPressed: () =>
+                            settingController.updateModeStatus(newModeStatus),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: modeColor,
                           foregroundColor: Colors.white,
@@ -370,7 +390,9 @@ class HomeView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              isAuto ? Icons.pan_tool_alt_rounded : Icons.smart_toy_rounded,
+                              isAuto
+                                  ? Icons.pan_tool_alt_rounded
+                                  : Icons.smart_toy_rounded,
                               size: 20,
                             ),
                             const SizedBox(width: 12),
@@ -412,11 +434,7 @@ class HomeView extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.water_rounded,
-                          color: grapeAccent,
-                          size: 24,
-                        ),
+                        Icon(Icons.water_rounded, color: grapeAccent, size: 24),
                         const SizedBox(width: 8),
                         Text(
                           'Status Valve',
@@ -455,7 +473,9 @@ class HomeView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              valveStatus == 'ON' ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                              valveStatus == 'ON'
+                                  ? Icons.check_circle_rounded
+                                  : Icons.cancel_rounded,
                               size: 48,
                               color: valveStatusColor,
                             ),
@@ -511,11 +531,17 @@ class HomeView extends StatelessWidget {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: isValveDisabled ? null : () {
-                          settingController.updateValveStatus(newValveStatus);
-                        },
+                        onPressed: isValveDisabled
+                            ? null
+                            : () {
+                                settingController.updateValveStatus(
+                                  newValveStatus,
+                                );
+                              },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isValveDisabled ? Colors.grey : valveStatusColor,
+                          backgroundColor: isValveDisabled
+                              ? Colors.grey
+                              : valveStatusColor,
                           foregroundColor: Colors.white,
                           disabledBackgroundColor: Colors.grey.shade300,
                           disabledForegroundColor: Colors.grey.shade600,
@@ -529,8 +555,8 @@ class HomeView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              valveStatus == 'ON' 
-                                  ? Icons.power_settings_new_rounded 
+                              valveStatus == 'ON'
+                                  ? Icons.power_settings_new_rounded
                                   : Icons.power_rounded,
                               size: 24,
                             ),
@@ -559,14 +585,10 @@ class HomeView extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.access_time,
-                            size: 16,
-                            color: grapeAccent,
-                          ),
+                          Icon(Icons.access_time, size: 16, color: grapeAccent),
                           const SizedBox(width: 8),
                           Text(
-                            valveSetting != null 
+                            valveSetting != null
                                 ? 'Update: ${DateFormat('dd MMM yyyy, HH:mm:ss').format(valveSetting.updatedAt ?? DateTime.now())}'
                                 : 'Loading Setting...',
                             style: TextStyle(

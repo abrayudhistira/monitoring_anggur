@@ -6,6 +6,7 @@ import 'package:monitoring_anggur/core/services/socket_services.dart';
 import 'package:monitoring_anggur/page/dashboard/dashboard.dart';
 import 'package:monitoring_anggur/page/auth/login.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 // OPTIONAL: custom HttpOverrides untuk set timeout / stabilitas koneksi
 class MyHttpOverrides extends HttpOverrides {
@@ -17,9 +18,9 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await initializeDateFormatting('id_ID', null);
   // PASANG HttpOverrides global DI SINI (sebelum runApp)
   HttpOverrides.global = MyHttpOverrides();
 
@@ -34,9 +35,7 @@ void main() {
 
         // 2. Auth Controller
         ChangeNotifierProvider(
-          create: (context) => AuthController(
-            context.read<SocketService>(),
-          ),
+          create: (context) => AuthController(context.read<SocketService>()),
         ),
 
         // 3. Setting Controller (membutuhkan AuthController dan SocketService)
@@ -61,14 +60,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'IoT Dashboard',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       // Konsumsi status otentikasi
       home: Consumer<AuthController>(
         builder: (context, authController, child) {
           if (authController.isLoading) {
-            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
 
           if (authController.isAuthenticated) {
