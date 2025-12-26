@@ -1,7 +1,8 @@
 import 'package:http/http.dart' as http;
 
 // Ganti dengan URL backend Node.js Anda
-const String baseURL = "http://192.168.1.123:5002"; 
+// const String baseURL = "https://itshowcase.umy.ac.id/2025/smartgrape"; 
+const String baseURL = "https://yht.co.id"; 
 
 class ApiService {
   // Metode untuk mendapatkan header HTTP dengan token JWT
