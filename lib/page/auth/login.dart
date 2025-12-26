@@ -25,7 +25,7 @@ class _LoginViewState extends State<LoginView> {
 
   Future<void> _handleLogin() async {
     if (_isLoggingIn) return;
-    
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -33,19 +33,28 @@ class _LoginViewState extends State<LoginView> {
     });
 
     try {
-      await Provider.of<AuthController>(context, listen: false).login(
-        _usernameController.text.trim(),
-        _passwordController.text,
-      );
+      await Provider.of<AuthController>(
+        context,
+        listen: false,
+      ).login(_usernameController.text.trim(), _passwordController.text);
+      // Jika berhasil, biasanya akan navigasi pindah halaman di sini atau di listener
     } catch (e) {
       if (mounted) {
+        // BERSIHKAN PESAN ERROR: Hapus kata "Exception: "
+        String errorMessage = e.toString().replaceAll('Exception: ', '');
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
                 const Icon(Icons.error_outline, color: Colors.white),
                 const SizedBox(width: 12),
-                Expanded(child: Text('Login Gagal: $e')),
+                Expanded(
+                  child: Text(
+                    errorMessage, // Gunakan variabel yang sudah dibersihkan
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ),
               ],
             ),
             backgroundColor: Colors.red.shade700,
@@ -53,6 +62,9 @@ class _LoginViewState extends State<LoginView> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            margin: const EdgeInsets.all(
+              16,
+            ), // Tambahan margin agar lebih cantik
           ),
         );
       }
@@ -80,11 +92,7 @@ class _LoginViewState extends State<LoginView> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              grapeDeep,
-              grapePrimary,
-              grapeAccent,
-            ],
+            colors: [grapeDeep, grapePrimary, grapeAccent],
           ),
         ),
         child: SafeArea(
@@ -252,7 +260,8 @@ class _LoginViewState extends State<LoginView> {
                                       ),
                                     )
                                   : const Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'Login',

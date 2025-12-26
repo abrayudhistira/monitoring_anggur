@@ -11,28 +11,36 @@ class AuthService {
 
   // --- Login ---
   Future<String?> login(String username, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseURL/login'),
-      headers: ApiService.getAuthHeaders(null),
-      body: json.encode({
-        'username': username,
-        'password': password,
-      }),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('$baseURL/login'),
+        headers: ApiService.getAuthHeaders(null),
+        body: json.encode({'username': username, 'password': password}),
+      );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final token = data['token'] as String;
-      final userData = User.fromJson(data['user']).toJson();
-      
-      await _storage.write(key: _tokenKey, value: token);
-      await _storage.write(key: _userKey, value: json.encode(userData));
-      
-      return token;
-    } else {
-      // Handle error login
-      final errorData = json.decode(response.body);
-      throw Exception(errorData['message'] ?? 'Gagal melakukan login');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final token = data['token'] as String;
+        final userData = User.fromJson(data['user']).toJson();
+
+        await _storage.write(key: _tokenKey, value: token);
+        await _storage.write(key: _userKey, value: json.encode(userData));
+
+        return token;
+      } else if (response.statusCode == 401) {
+        // KHUSUS HANDLE 401: Invalid Credentials
+        throw Exception('Username atau Password salah');
+      } else {
+        // Handle error lainnya (500, 404, dll)
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Gagal melakukan login');
+      }
+    } catch (e) {
+      // Menangkap error koneksi (misal server mati / tidak ada internet)
+      if (e.toString().contains('SocketException')) {
+        throw Exception('Tidak ada koneksi internet');
+      }
+      rethrow;
     }
   }
 
@@ -45,7 +53,7 @@ class AuthService {
     //     // Sesuaikan jika backend Anda memerlukan body tertentu untuk logout
     //   }),
     // );
-    
+
     // Clear storage regardless of API response success (for safety)
     await _storage.delete(key: _tokenKey);
     await _storage.delete(key: _userKey);
@@ -53,7 +61,7 @@ class AuthService {
 
   // --- Token and User Getter ---
   Future<String?> getToken() async => await _storage.read(key: _tokenKey);
-  
+
   Future<User?> getLoggedInUser() async {
     final userDataJson = await _storage.read(key: _userKey);
     if (userDataJson == null) return null;

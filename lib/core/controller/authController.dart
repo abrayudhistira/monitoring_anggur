@@ -6,7 +6,7 @@ import 'package:monitoring_anggur/core/services/socket_services.dart';
 class AuthController with ChangeNotifier {
   final AuthService _authService = AuthService();
   final SocketService _socketService;
-  
+
   User? _user;
   String? _token;
   bool _isLoading = true;
@@ -23,7 +23,7 @@ class AuthController with ChangeNotifier {
   Future<void> _checkAuthStatus() async {
     _token = await _authService.getToken();
     _user = await _authService.getLoggedInUser();
-    
+
     if (_token != null && _user != null) {
       _socketService.initSocket(_token!); // Inisialisasi Socket jika token ada
     }
@@ -33,26 +33,37 @@ class AuthController with ChangeNotifier {
 
   // --- Login ---
   Future<void> login(String username, String password) async {
-    _isLoading = true;
-    notifyListeners();
+    // HAPUS baris ini:
+    // _isLoading = true;
+    // notifyListeners();
+
+    // PENJELASAN:
+    // Jangan set _isLoading global di sini. Biarkan LoginView yang mengatur
+    // loading state (spinner di tombol) secara lokal menggunakan setState.
+    // Jika Anda set _isLoading = true di sini, main.dart akan me-rebuild
+    // dan mematikan LoginView sebelum error sempat muncul.
+
     try {
       final token = await _authService.login(username, password);
       _token = token;
       _user = await _authService.getLoggedInUser();
-      
+
       if (_token != null) {
-        _socketService.initSocket(_token!); // Koneksi Socket setelah Login
+        _socketService.initSocket(_token!);
       }
-      
+
+      // PENTING: Hanya notifyListeners JIKA SUKSES.
+      // Ini akan memberitahu main.dart untuk pindah dari LoginView ke HomeView.
+      notifyListeners();
     } catch (e) {
       print('Login Gagal: $e');
       _user = null;
       _token = null;
-      rethrow;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+
+      // HAPUS notifyListeners() di catch/finally agar main.dart tidak kedip
+      rethrow; // Lempar error kembali ke LoginView agar ditangkap catch di sana
     }
+    // HAPUS finally block yang mengubah _isLoading = false
   }
 
   // --- Logout ---
@@ -61,7 +72,7 @@ class AuthController with ChangeNotifier {
       await _authService.logout(_token!);
     }
     _socketService.disconnect(); // Putuskan koneksi Socket
-    
+
     _user = null;
     _token = null;
     notifyListeners();
