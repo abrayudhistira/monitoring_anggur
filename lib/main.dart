@@ -31,7 +31,10 @@ void main() async {
     MultiProvider(
       providers: [
         // 1. Service Provider
-        Provider<SocketService>(create: (_) => socketService),
+        // Provider<SocketService>(create: (_) => socketService),
+        ChangeNotifierProvider<SocketService>(
+          create: (_) => socketService,
+        ),
 
         // 2. Auth Controller
         ChangeNotifierProvider(
