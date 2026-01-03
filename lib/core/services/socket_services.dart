@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:monitoring_anggur/core/model/settingModel.dart';
 import 'package:monitoring_anggur/core/model/suhuhModel.dart';
 import 'package:monitoring_anggur/core/services/api_services.dart';

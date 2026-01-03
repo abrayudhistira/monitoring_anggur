@@ -1,7 +1,6 @@
-import 'package:http/http.dart' as http;
 
 // Ganti dengan URL backend Node.js Anda
-// const String baseURL = "https://itshowcase.umy.ac.id/2025/smartgrape"; 
+//const String baseURL = "https://itshowcase.umy.ac.id/2025/smartgrape"; 
 const String baseURL = "https://yht.co.id"; 
 
 class ApiService {

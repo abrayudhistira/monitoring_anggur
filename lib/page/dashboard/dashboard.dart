@@ -264,7 +264,9 @@ class HomeView extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 Text(
                                   suhu != null
-                                      ? 'Update: ${DateFormat('HH:mm:ss').format(suhu.timestamp)}'
+                                      //? 'Update: ${DateFormat('HH:mm:ss').format(suhu.timestamp)}'
+                                      ? 'Update: ${DateFormat('dd MMM yyyy, HH:mm:ss')
+                                        .format((suhu.timestamp ?? DateTime.now()).toLocal())}'
                                       : 'Menunggu data sensor...',
                                   style: TextStyle(
                                     fontSize: 12,
