@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "162221960026",
+    "project_id": "smartgrape-d81ce",
+    "storage_bucket": "smartgrape-d81ce.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162221960026:android:33b2125fb3d48826af2163",
+        "android_client_info": {
+          "package_name": "com.example.monitoring_anggur"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-e0C4B2DIazvsTUDruiF6FWQmWmS0YxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

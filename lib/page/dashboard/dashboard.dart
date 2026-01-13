@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:monitoring_anggur/core/controller/authController.dart';
 import 'package:monitoring_anggur/core/controller/settingController.dart';
 import 'package:monitoring_anggur/core/services/socket_services.dart'; // Pastikan path ini sesuai
+import 'package:monitoring_anggur/core/services/notification_service.dart'; // Sesuaikan path-nya
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -21,7 +23,37 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   SocketConnectionStatus? _lastStatus;
+  @override
+  void initState() {
+    super.initState();
+    
+    // --- INTEGRASI NOTIFIKASI ---
+    // 1. Sinkronisasi token FCM ke backend saat masuk Home
+    NotificationService().syncTokenToBackend();
 
+    // 2. Setup listener untuk notifikasi yang masuk saat aplikasi sedang dibuka
+    NotificationService().listenForegroundNotifications();
+  }
+
+  // Helper untuk menampilkan pesan notifikasi di dalam app (Foreground)
+  void _showForegroundNotification(String title, String body) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(body),
+          ],
+        ),
+        backgroundColor: HomeView.grapePrimary,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(bottom: 100, left: 16, right: 16), // Agar tidak menutupi tombol valve
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     // --- Logika Socket Connection Snackbar ---

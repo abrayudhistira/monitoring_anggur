@@ -4,18 +4,21 @@ import 'package:monitoring_anggur/core/model/settingModel.dart';
 import 'package:monitoring_anggur/core/model/suhuhModel.dart';
 import 'package:monitoring_anggur/core/services/api_services.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
-import 'package:connectivity_plus/connectivity_plus.dart'; // Tambahkan ini
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 enum SocketConnectionStatus {
   idle,
   connecting,
   connected,
-  disconnected, // Ini akan kita anggap sebagai Server Down
-  noInternet,   // Ini masalah koneksi pengguna
+  disconnected, 
+  noInternet,   
 }
 
 class SocketService extends ChangeNotifier {
   io.Socket? _socket;
+  
+  // Stream Controllers
   final _settingController = StreamController<Setting>.broadcast();
   Stream<Setting> get settingStream => _settingController.stream;
 
@@ -25,21 +28,78 @@ class SocketService extends ChangeNotifier {
   SocketConnectionStatus _status = SocketConnectionStatus.idle;
   SocketConnectionStatus get status => _status;
 
+  // Notifikasi & Logika Flag
+  final FlutterLocalNotificationsPlugin _localNotif = FlutterLocalNotificationsPlugin();
+  bool _isKlepOpenNotified = false; // Flag agar tidak spam notifikasi kering
+  bool _isKlepClosedNotified = false; // Flag agar tidak spam notifikasi basah
+
+  SocketService() {
+    _initNotification();
+  }
+
+  // --- Inisialisasi Notifikasi Lokal ---
+  Future<void> _initNotification() async {
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSetting = InitializationSettings(android: androidInit);
+    await _localNotif.initialize(initSetting);
+  }
+
+  // --- Fungsi Menampilkan Notifikasi Push ---
+  Future<void> _showPushNotification(String title, String body) async {
+    const androidDetail = AndroidNotificationDetails(
+      'channel_anggur_id',
+      'Monitoring Anggur',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+    );
+    const detail = NotificationDetails(android: androidDetail);
+    await _localNotif.show(DateTime.now().millisecond, title, body, detail);
+  }
+
+  // --- Logika Pengecekan Ambang Batas Kelembaban ---
+  void _analyzeHumidity(double humidity) {
+    // 1. Kondisi Tanah Kering (Bawah 300)
+    if (humidity < 300) {
+      if (!_isKlepOpenNotified) {
+        _showPushNotification(
+          "Peringatan: Tanah Kering!",
+          "Kelembaban ${humidity.toStringAsFixed(1)}. Sistem akan membuka klep otomatis."
+        );
+        _isKlepOpenNotified = true; // Kunci agar tidak kirim notif lagi
+        _isKlepClosedNotified = false; // Reset status sebaliknya
+      }
+    } 
+    // 2. Kondisi Tanah Basah (Atas 700)
+    else if (humidity > 700) {
+      if (!_isKlepClosedNotified) {
+        _showPushNotification(
+          "Info: Tanah Basah!",
+          "Kelembaban ${humidity.toStringAsFixed(1)}. Sistem akan menutup klep otomatis."
+        );
+        _isKlepClosedNotified = true; // Kunci
+        _isKlepOpenNotified = false; // Reset status sebaliknya
+      }
+    }
+    // 3. Kondisi Normal (Antara 300 - 700)
+    else {
+      // Jika kembali ke kondisi normal, reset semua flag agar siap kirim notif lagi nantinya
+      _isKlepOpenNotified = false;
+      _isKlepClosedNotified = false;
+    }
+  }
+
   void _setStatus(SocketConnectionStatus newStatus) {
     if (_status == newStatus) return;
     _status = newStatus;
     notifyListeners();
   }
 
-  // Fungsi untuk mengecek apakah masalahnya ada di Internet atau di Server
   Future<void> _checkFailureReason() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    
-    // Jika tidak ada koneksi WiFi atau Mobile Data sama sekali
     if (connectivityResult.contains(ConnectivityResult.none)) {
       _setStatus(SocketConnectionStatus.noInternet);
     } else {
-      // Jika ada sinyal tapi socket tetap gagal, berarti Server Down
       _setStatus(SocketConnectionStatus.disconnected);
     }
   }
@@ -57,7 +117,7 @@ class SocketService extends ChangeNotifier {
             .setQuery({'token': token})
             .enableForceNew()
             .disableAutoConnect()
-            .setReconnectionAttempts(5) // Coba recon berkala
+            .setReconnectionAttempts(5)
             .build(),
       );
 
@@ -69,12 +129,10 @@ class SocketService extends ChangeNotifier {
       });
 
       _socket!.onDisconnect((_) {
-        print('Socket Disconnected');
         _checkFailureReason();
       });
 
       _socket!.onConnectError((err) {
-        print('Socket Connect Error: $err');
         _checkFailureReason();
       });
 
@@ -86,10 +144,12 @@ class SocketService extends ChangeNotifier {
       _socket!.on('suhu_update', (data) {
         final suhu = Suhu.fromJson(data as Map<String, dynamic>);
         _suhuController.sink.add(suhu);
+
+        // --- Panggil Fungsi Analisa Notifikasi ---
+        _analyzeHumidity(suhu.humidity);
       });
 
     } catch (e) {
-      print('Socket Initialization Error: $e');
       _checkFailureReason();
     }
   }

@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:monitoring_anggur/core/model/userModel.dart';
 import 'package:monitoring_anggur/core/services/api_services.dart';
+import 'package:monitoring_anggur/core/services/notification_service.dart';
 
 class AuthService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -25,7 +26,7 @@ class AuthService {
 
         await _storage.write(key: _tokenKey, value: token);
         await _storage.write(key: _userKey, value: json.encode(userData));
-
+        await NotificationService().syncTokenToBackend();
         return token;
       } else if (response.statusCode == 401) {
         // KHUSUS HANDLE 401: Invalid Credentials
