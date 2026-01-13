@@ -25,7 +25,9 @@ class MyHttpOverrides extends HttpOverrides {
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
       ..connectionTimeout = const Duration(seconds: 15)
-      ..idleTimeout = const Duration(seconds: 15);
+      ..idleTimeout = const Duration(seconds: 15)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
 
@@ -58,9 +60,17 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+<<<<<<< HEAD
         ChangeNotifierProvider<SocketService>(
           create: (_) => socketService,
         ),
+=======
+        // 1. Service Provider
+        // Provider<SocketService>(create: (_) => socketService),
+        ChangeNotifierProvider<SocketService>(create: (_) => socketService),
+
+        // 2. Auth Controller
+>>>>>>> a70610e72327ac358bab8426d3b6910ba2a2633c
         ChangeNotifierProvider(
           create: (context) => AuthController(context.read<SocketService>()),
         ),
